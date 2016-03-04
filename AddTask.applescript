@@ -12,7 +12,7 @@
 --
 -- SOME CONFIG DATA
 --
--- The name of the mailbox in the meddage account, to move message after creating task. Put "" to avoid moving. 
+-- The name of the mailbox in the message account, to move message after creating task. Put "" to avoid moving. 
 set destinationMailbox to "Archive"
 -- File containing todoist token, please remove any blanks including CR/LF
 set todoistTokenFileName to "todoist-token.txt"
@@ -66,10 +66,10 @@ tell application "Mail"
 		
 		-- crazy, no string interpolation in AS; see todoist doc
 		-- use tempUUID of create task call as reference to it for adding note there. 
-		set curl to "curl https://todoist.com/API/v6/sync -d token=" & todoistToken & " -d " & Â
-			"commands='[{\"type\": \"item_add\", \"temp_id\": \"" & tempUUID1 & "\", \"uuid\": \"" & myUUID1 & Â
-			"\", \"args\": {\"content\": \"" & theName & "\"}}, " & Â
-			"{\"type\": \"note_add\", \"temp_id\": \"" & tempUUID2 & "\", \"uuid\": \"" & myUUID2 & Â
+		set curl to "curl https://todoist.com/API/v6/sync -d token=" & todoistToken & " -d " & Ã‚
+			"commands='[{\"type\": \"item_add\", \"temp_id\": \"" & tempUUID1 & "\", \"uuid\": \"" & myUUID1 & Ã‚
+			"\", \"args\": {\"content\": \"" & theName & "\"}}, " & Ã‚
+			"{\"type\": \"note_add\", \"temp_id\": \"" & tempUUID2 & "\", \"uuid\": \"" & myUUID2 & Ã‚
 			"\", \"args\": {\"content\": \"" & theURL & "\", \"item_id\": \"" & tempUUID1 & "\"}}" & "]'"
 		
 		--		display dialog curl
