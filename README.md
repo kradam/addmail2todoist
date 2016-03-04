@@ -1,8 +1,6 @@
 # addmail2todoist
 Apple Script adding selected message in Apple Mail to Todoist.
 
-Inspiration: http://mhorner.blogspot.com/2015/01/create-new-todoist-task-from-mac-outlook.html
-
 This script if for people who use Apple Mail and Todoist Premium. 
 
 ##Features:
@@ -22,3 +20,8 @@ This script if for people who use Apple Mail and Todoist Premium.
 * You can set token file hidden to unclutter script menu.
 * Using Mail select any message, click script menu and pick the script name. 
 
+
+![Screenshot](/Apple.Mail.script.png)
+
+
+There is similar script for MS Outlook: http://mhorner.blogspot.com/2015/01/create-new-todoist-task-from-mac-outlook.html
