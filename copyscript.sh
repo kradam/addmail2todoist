@@ -1,0 +1,1 @@
+cp AddTask.applescript ~/Library/Scripts/Applications/Mail
