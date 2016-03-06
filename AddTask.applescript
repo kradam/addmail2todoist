@@ -66,11 +66,7 @@ tell application "Mail"
 		
 		-- crazy, no string interpolation in AS; see todoist doc
 		-- use tempUUID of create task call as reference to it for adding note there. 
-		set curl to "curl https://todoist.com/API/v6/sync -d token=" & todoistToken & " -d " & Â
-			"commands='[{\"type\": \"item_add\", \"temp_id\": \"" & tempUUID1 & "\", \"uuid\": \"" & myUUID1 & Â
-			"\", \"args\": {\"content\": \"" & theName & "\"}}, " & Â
-			"{\"type\": \"note_add\", \"temp_id\": \"" & tempUUID2 & "\", \"uuid\": \"" & myUUID2 & Â
-			"\", \"args\": {\"content\": \"" & theURL & "\", \"item_id\": \"" & tempUUID1 & "\"}}" & "]'"
+		set curl to "curl https://todoist.com/API/v6/sync -d token=" & todoistToken & " -d commands='[{\"type\": \"item_add\", \"temp_id\": \"" & tempUUID1 & "\", \"uuid\": \"" & myUUID1 & "\", \"args\": {\"content\": \"" & theName & "\"}}, " & "{\"type\": \"note_add\", \"temp_id\": \"" & tempUUID2 & "\", \"uuid\": \"" & myUUID2 & "\", \"args\": {\"content\": \"" & theURL & "\", \"item_id\": \"" & tempUUID1 & "\"}}" & "]'"
 		
 		--		display dialog curl
 		
