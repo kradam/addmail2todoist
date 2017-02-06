@@ -14,16 +14,23 @@
 --
 -- The name of the mailbox in the message account, to move message after creating task. Put "" to avoid moving. 
 set destinationMailbox to "Archive"
--- File containing todoist token, please remove any blanks including CR/LF
-set todoistTokenFileName to "todoist-token.txt"
 -- Some prefixes to remove from the beginning of message subject. Feel free to add prefixes in your language.
 set prefixesToRemove to {"re: ", "odp: ", "fw: ", "fwd: "}
 -- Decide if you want to confirm name of created task. Defaut is message subject.
 set askForTheName to true
+-- Set the Todist API Token
+set todoistToken to ""
 
 -- END OF CONFIG DATA
 
-set todoistToken to read file ((path to home folder as text) & "Library:Scripts:Applications:Mail:" & todoistTokenFileName)
+on urlEncode(str)
+	local str
+	try
+		return (do shell script "/bin/echo " & quoted form of str & " | perl -MURI::Escape -lne 'print uri_escape($_)'")
+	on error eMsg number eNum
+		error "Can't urlEncode: " & eMsg number eNum
+	end try
+end urlEncode
 
 tell application "Mail"
 	
@@ -38,6 +45,7 @@ tell application "Mail"
 	repeat with theMessage in selectedMessages
 		
 		set theName to subject of theMessage -- subject is the name of the task
+		set theBody to content of theMessage -- body is for context in the task's note
 		
 		repeat with prefix in prefixesToRemove
 			if theName starts with prefix then
@@ -58,21 +66,25 @@ tell application "Mail"
 		
 		-- URL for Apple Mail Message, adding to the task note. Click in Todoist to open message in Mail.
 		set theURL to "message://%3c" & theMessage's message id & "%3e"
+		set theTitle to "[" & my urlEncode(theName) & "](" & theURL & ")"
+		set theReference to my urlEncode(theBody)
 		
 		set myUUID1 to do shell script "uuidgen"
 		set myUUID2 to do shell script "uuidgen"
+		set myUUID3 to do shell script "uuidgen"
 		set tempUUID1 to do shell script "uuidgen"
 		set tempUUID2 to do shell script "uuidgen"
+		set tempUUID3 to do shell script "uuidgen"
 		
 		-- crazy, no string interpolation in AS; see todoist doc
 		-- use tempUUID of create task call as reference to it for adding note there. 
-		set curl to "curl https://todoist.com/API/v6/sync -d token=" & todoistToken & " -d commands='[{\"type\": \"item_add\", \"temp_id\": \"" & tempUUID1 & "\", \"uuid\": \"" & myUUID1 & "\", \"args\": {\"content\": \"" & theName & "\"}}, " & "{\"type\": \"note_add\", \"temp_id\": \"" & tempUUID2 & "\", \"uuid\": \"" & myUUID2 & "\", \"args\": {\"content\": \"" & theURL & "\", \"item_id\": \"" & tempUUID1 & "\"}}" & "]'"
+		set curl to "curl https://todoist.com/API/v7/sync -d token=" & todoistToken & " -d commands='[{\"type\": \"item_add\", \"temp_id\": \"" & tempUUID1 & "\", \"uuid\": \"" & myUUID1 & "\", \"args\": {\"content\": \"" & theTitle & "\"}}, " & "{\"type\": \"note_add\", \"temp_id\": \"" & tempUUID2 & "\", \"uuid\": \"" & myUUID2 & "\", \"args\": {\"content\": \"" & theURL & "\", \"item_id\": \"" & tempUUID1 & "\"}}, " & "{\"type\": \"note_add\", \"temp_id\": \"" & tempUUID3 & "\", \"uuid\": \"" & myUUID3 & "\", \"args\": {\"content\": \"" & theReference & "\", \"item_id\": \"" & tempUUID1 & "\"}}" & "]'"
 		
-		--		display dialog curl
+		-- display dialog curl
 		
 		set response to do shell script curl
 		
-		if response does not start with "{\"TempIdMapping\":{\"" then
+		if response does not start with "{\"seq_no_global\":" then
 			display alert "Adding task failed" message response as critical
 		else
 			if destinationMailbox is not equal to "" then
@@ -80,7 +92,7 @@ tell application "Mail"
 			end if
 		end if
 		
-		--display dialog "ok!"
+		-- display dialog "ok!"
 		
 	end repeat
 	
